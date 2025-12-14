@@ -14,12 +14,12 @@ model categories {
 }
 
 model customers {
-  customerid   Int      @id @default(autoincrement())
-  name         String   @db.VarChar(32)
-  surname      String   @db.VarChar(32)
-  email        String   @db.VarChar(32)
-  phone_number String?  @db.VarChar(32)
+  customerid   Int       @id @default(autoincrement())
+  name         String    @db.VarChar(32)
+  email        String    @db.VarChar(32)
+  phone_number String?   @db.VarChar(32)
   orders       orders[]
+  ratings      ratings[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -40,6 +40,7 @@ model orders {
   cost        Decimal       @db.Decimal(10, 2)
   address     String        @db.VarChar(256)
   customerid  Int
+  is_ready    Boolean       @default(false)
   order_items order_items[]
   customers   customers     @relation(fields: [customerid], references: [customerid], onDelete: NoAction, onUpdate: NoAction)
   payments    payments?
@@ -72,6 +73,17 @@ model products {
   cost_for_one       Decimal              @db.Decimal(10, 2)
   order_items        order_items[]
   product_categories product_categories[]
+  ratings            ratings[]
+}
+
+model ratings {
+  rating     Float
+  customerid Int
+  productid  Int
+  customers  customers @relation(fields: [customerid], references: [customerid], onDelete: NoAction, onUpdate: NoAction)
+  products   products  @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([productid, customerid])
 }
 
 enum ways_of_payment {
