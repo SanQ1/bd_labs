@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model categories {
+  categoryid         Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(32)
+  product_categories product_categories[]
+}
+
+model customers {
+  customerid   Int      @id @default(autoincrement())
+  name         String   @db.VarChar(32)
+  surname      String   @db.VarChar(32)
+  email        String   @db.VarChar(32)
+  phone_number String?  @db.VarChar(32)
+  orders       orders[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model order_items {
+  productid Int
+  orderid   Int
+  cost      Decimal  @db.Decimal(10, 2)
+  quantity  Int
+  orders    orders   @relation(fields: [orderid], references: [orderid], onDelete: NoAction, onUpdate: NoAction)
+  products  products @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([productid, orderid])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model orders {
+  orderid     Int           @id @default(autoincrement())
+  cost        Decimal       @db.Decimal(10, 2)
+  address     String        @db.VarChar(256)
+  customerid  Int
+  order_items order_items[]
+  customers   customers     @relation(fields: [customerid], references: [customerid], onDelete: NoAction, onUpdate: NoAction)
+  payments    payments?
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model payments {
+  paymentid      Int              @id @default(autoincrement())
+  sum            Decimal          @db.Decimal(10, 2)
+  way_of_payment ways_of_payment?
+  orderid        Int              @unique
+  orders         orders           @relation(fields: [orderid], references: [orderid], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model product_categories {
+  productid  Int
+  categoryid Int
+  categories categories @relation(fields: [categoryid], references: [categoryid], onDelete: NoAction, onUpdate: NoAction)
+  products   products   @relation(fields: [productid], references: [productid], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([productid, categoryid])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model products {
+  productid          Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(32)
+  description        String?
+  quantity           Int
+  cost_for_one       Decimal              @db.Decimal(10, 2)
+  order_items        order_items[]
+  product_categories product_categories[]
+}
+
+enum ways_of_payment {
+  cash
+  card
+}
