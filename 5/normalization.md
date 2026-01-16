@@ -34,8 +34,7 @@ create table if not exists order_items
 	orderID	int not null references orders(orderID),
 	cost		decimal(10,2) not null		check (cost >= 0),
 	quantity	int not null			check (quantity > 0),
-
-	primary key (productID, orderID)
+    primary key (productID, orderID)
 );
 
 create table if not exists categories
@@ -168,8 +167,7 @@ create table if not exists order_items
 	orderID	int not null references orders(orderID),
 	cost		decimal(10,2) not null		check (cost >= 0),
 	quantity	int not null			check (quantity > 0),
-
-	primary key (productID, orderID)
+    primary key (productID, orderID)
 );
 Нова таблиця:
 create table if not exists order_items
@@ -177,8 +175,7 @@ create table if not exists order_items
 	productID	int not null references products(productID),
 	orderID	int not null references orders(orderID),
 	quantity	int not null			check (quantity > 0),
-
-	primary key (productID, orderID)
+    primary key (productID, orderID)
 );
 
 За вийнятком цього таблиця order_items знаходиться в 3НФ.
